@@ -33,6 +33,9 @@
   },
   "author": "Anurag Hazra",
   "license": "MIT",
+    "engines": {
+    "node": ">=13"
+  },
   "devDependencies": {
     "@actions/core": "^1.9.1",
     "@actions/github": "^4.0.0",
