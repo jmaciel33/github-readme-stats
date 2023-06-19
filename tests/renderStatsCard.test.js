@@ -16,6 +16,7 @@ const stats = {
   totalCommits: 200,
   totalIssues: 300,
   totalPRs: 400,
+  totalReviews: 50,
   contributedTo: 500,
   rank: { level: "A+", score: 40 },
 };
@@ -38,6 +39,9 @@ describe("Test renderStatsCard", () => {
     expect(getByTestId(document.body, "contribs").textContent).toBe("500");
     expect(queryByTestId(document.body, "card-bg")).toBeInTheDocument();
     expect(queryByTestId(document.body, "rank-circle")).toBeInTheDocument();
+
+    // Default hidden stats
+    expect(queryByTestId(document.body, "reviews")).not.toBeInTheDocument();
   });
 
   it("should have proper name apostrophe", () => {
@@ -68,6 +72,24 @@ describe("Test renderStatsCard", () => {
     expect(queryByTestId(document.body, "issues")).toBeNull();
     expect(queryByTestId(document.body, "prs")).toBeNull();
     expect(queryByTestId(document.body, "contribs")).toBeNull();
+    expect(queryByTestId(document.body, "reviews")).toBeNull();
+  });
+
+  it("should show total reviews", () => {
+    document.body.innerHTML = renderStatsCard(stats, {
+      show: ["reviews"],
+    });
+
+    expect(
+      document.body.getElementsByTagName("svg")[0].getAttribute("height"),
+    ).toBe("220");
+
+    expect(queryByTestId(document.body, "stars")).toBeDefined();
+    expect(queryByTestId(document.body, "commits")).toBeDefined();
+    expect(queryByTestId(document.body, "issues")).toBeDefined();
+    expect(queryByTestId(document.body, "prs")).toBeDefined();
+    expect(queryByTestId(document.body, "contribs")).toBeDefined();
+    expect(queryByTestId(document.body, "reviews")).toBeDefined();
   });
 
   it("should hide_rank", () => {
@@ -348,7 +370,7 @@ describe("Test renderStatsCard", () => {
       document.querySelector(
         'g[transform="translate(0, 100)"]>.stagger>.stat.bold',
       ).textContent,
-    ).toMatchInlineSnapshot(`"参与项目数 (last year):"`);
+    ).toMatchInlineSnapshot(`"贡献于（去年）:"`);
   });
 
   it("should render without rounding", () => {
@@ -365,5 +387,22 @@ describe("Test renderStatsCard", () => {
     expect(getByTestId(document.body, "commits").textContent).toBe("2k");
     document.body.innerHTML = renderStatsCard(stats, { number_format: "long" });
     expect(getByTestId(document.body, "commits").textContent).toBe("1999");
+  });
+
+  it("should render default rank icon with level A+", () => {
+    document.body.innerHTML = renderStatsCard(stats, {
+      rank_icon: "default",
+    });
+    expect(queryByTestId(document.body, "level-rank-icon")).toBeDefined();
+    expect(
+      queryByTestId(document.body, "level-rank-icon").textContent.trim(),
+    ).toBe("A+");
+  });
+
+  it("should render github rank icon", () => {
+    document.body.innerHTML = renderStatsCard(stats, {
+      rank_icon: "github",
+    });
+    expect(queryByTestId(document.body, "github-rank-icon")).toBeDefined();
   });
 });
